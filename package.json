@@ -1,0 +1,9 @@
+{
+	"scripts": {
+		"test": "jest"
+	},
+	"devDependencies": {
+		"jest": "^27.4.5",
+		"webpack": "^5.65.0"
+	}
+}
