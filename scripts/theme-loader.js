@@ -8,7 +8,7 @@ In addition to this script, we also need to insert a script tag into the iframe 
 */
 const { log } = console;
 const loggerKey = 'THEME-LOADER';
-const messengerReady = 'theme-messenger: ready';
+const readyMessage = 'theme-messenger: ready';
 
 function loadTheme() {
 	const script = document.getElementById('theme-loader');
@@ -21,16 +21,31 @@ function loadTheme() {
 
 	log(`${loggerKey}: load iframe with key`, key);
 
+	window.top.postMessage(`theme-loader.${key}`, '*');
+
 	const sheet = new StyleSheet({
 		key,
 		container: document.head,
 	});
 
+	/*
+	listen for parent app ready message
+	**/
+
 	window.addEventListener('message', ({ data }) => {
-		if (typeof data === 'string' && data === messengerReady) {
-			log(`${loggerKey}: receive message ${messengerReady}`);
+		if (typeof data !== 'string' || typeof data !== 'object') return;
+		if (typeof data !== 'string' && !data.startsWith('theme-messenger')) return;
+
+		if (data.key === key && data.styles) {
+			log(`${loggerKey}: INSERT STYLE`, data.styles);
+			sheet.insert(data.styles);
+		} else if (data === readyMessage) {
 			window.top.postMessage(`theme-loader.${key}`, '*');
-		} else if (data && data.key === key && data.styles) {
+		}
+	});
+
+	window.addEventListener('message', ({ data }) => {
+		if (data && data.key === key && data.styles) {
 			log(`${loggerKey}: INSERT STYLE`, data.styles);
 			sheet.insert(data.styles);
 		}
