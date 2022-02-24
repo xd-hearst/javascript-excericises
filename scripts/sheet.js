@@ -20,6 +20,11 @@ styleSheet.flush()
 - empties the stylesheet of all its contents
 
 */
+
+window.process = {
+	env: { NODE_ENV: '' },
+};
+
 // $FlowFixMe
 function sheetForTag(tag) {
 	if (tag.sheet) {
@@ -127,7 +132,6 @@ var StyleSheet = /*#__PURE__*/ (function () {
 		if (this.isSpeedy) {
 			var sheet = sheetForTag(tag);
 
-			console.log('agaglj', this.isSpeedy);
 			try {
 				// this is the ultrafast version, works across browsers
 				// the big drawback is that the css won't be editable in devtools
@@ -146,7 +150,6 @@ var StyleSheet = /*#__PURE__*/ (function () {
 				}
 			}
 		} else {
-			console.log('agaglj', rule);
 			tag.appendChild(document.createTextNode(rule));
 		}
 
