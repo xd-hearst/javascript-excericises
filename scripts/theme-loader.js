@@ -10,6 +10,22 @@ const { log } = console;
 const loggerKey = 'THEME-LOADER';
 const readyMessage = 'theme-messenger: ready';
 
+function postThemekey(data, key) {
+	if (!data.startsWith('theme-messenger')) return;
+	window.top.postMessage(`theme-loader.${key}`, '*');
+}
+
+function postStyles(data, key) {
+	if (data.key !== key || !data.styles) return;
+	const sheet = new StyleSheet({
+		key,
+		container: document.head,
+	});
+
+	log(`${loggerKey}: INSERT STYLE`, data.styles);
+	sheet.insert(data.styles);
+}
+
 function loadTheme() {
 	const script = document.getElementById('theme-loader');
 
@@ -23,25 +39,21 @@ function loadTheme() {
 
 	window.top.postMessage(`theme-loader.${key}`, '*');
 
-	const sheet = new StyleSheet({
-		key,
-		container: document.head,
-	});
-
 	/*
 	listen for parent app ready message
 	**/
 
 	window.addEventListener('message', ({ data }) => {
 		console.log(data);
-		if (typeof data !== 'string' || typeof data !== 'object') return;
-		if (typeof data !== 'string' && !data.startsWith('theme-messenger')) return;
+		const isDataAstring = typeof data === 'string';
+		const isDataAnObject = typeof data === 'object';
 
-		if (data.key === key && data.styles) {
-			log(`${loggerKey}: INSERT STYLE`, data.styles);
-			sheet.insert(data.styles);
-		} else if (data === readyMessage) {
-			window.top.postMessage(`theme-loader.${key}`, '*');
+		if (!isDataAstring && !isDataAnObject) return;
+
+		if (isDataAstring) {
+			postThemekey(key);
+		} else {
+			postStyles(data, key);
 		}
 	});
 
