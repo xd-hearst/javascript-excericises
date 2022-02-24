@@ -33,6 +33,7 @@ function loadTheme() {
 	**/
 
 	window.addEventListener('message', ({ data }) => {
+		console.log(data);
 		if (typeof data !== 'string' || typeof data !== 'object') return;
 		if (typeof data !== 'string' && !data.startsWith('theme-messenger')) return;
 
