@@ -51,7 +51,7 @@ function loadTheme() {
 
 	window.addEventListener('message', ({ data }) => {
 		const isAMessageWithThemeLoaderKey = isAThemeLoaderMessage(data);
-
+		console.log(data, 'data l lrel l');
 		if (!isAMessageWithThemeLoaderKey && !isAThemeLoaderObject(data)) return;
 
 		if (isAMessageWithThemeLoaderKey) {
