@@ -57,6 +57,7 @@ function loadTheme() {
 		if (isAMessageWithThemeLoaderKey) {
 			window.top.postMessage(`theme-loader.${key}`, '*');
 		} else {
+			console.log('data recevie stle');
 			postStyles(data, key);
 		}
 	});
