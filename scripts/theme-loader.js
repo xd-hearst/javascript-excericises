@@ -24,9 +24,22 @@ function isAThemeLoaderObject(data) {
 	);
 }
 
+function isDataKeyValid(data, key) {
+	if (!isAThemeLoaderMessage(data)) {
+		return false;
+	}
+
+	const keys = data.split('.');
+
+	if (keys.length < 1 || keys[1] !== key) {
+		return false;
+	}
+	return true;
+}
+
 // from app/styles/@theme-system/loader/browser.js
 function postStyles(data, key) {
-	if (data.key !== key || !data.styles) return;
+	if (isDataKeyValid(data, key)) return;
 	const sheet = new StyleSheet({
 		key,
 		container: document.head,
