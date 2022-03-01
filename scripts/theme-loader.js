@@ -9,11 +9,22 @@ In addition to this script, we also need to insert a script tag into the iframe 
 const { log } = console;
 const loggerKey = 'THEME-LOADER';
 
-function postThemekey(data, key) {
-	if (!data.startsWith('theme-messenger')) return;
-	window.top.postMessage(`theme-loader.${key}`, '*');
+const themeLoader = 'theme-loader';
+
+// from app/styles/@theme-system/messenger/utils.js
+function isAThemeLoaderMessage(data) {
+	const isDataAstring = typeof data === 'string';
+	return isDataAstring && data.startsWith(themeLoader);
 }
 
+function isAThemeLoaderObject(data) {
+	const isDataAnObject = typeof data === 'object';
+	return (
+		isDataAnObject && data.key?.length > 0 && data.key.startsWith(themeLoader)
+	);
+}
+
+// from app/styles/@theme-system/loader/browser.js
 function postStyles(data, key) {
 	if (data.key !== key || !data.styles) return;
 	const sheet = new StyleSheet({
@@ -39,14 +50,12 @@ function loadTheme() {
 	window.top.postMessage(`theme-loader.${key}`, '*');
 
 	window.addEventListener('message', ({ data }) => {
-		console.log(data);
-		const isDataAstring = typeof data === 'string';
-		const isDataAnObject = typeof data === 'object';
+		const isAMessageWithThemeLoaderKey = isAThemeLoaderMessage(data);
 
-		if (!isDataAstring && !isDataAnObject) return;
+		if (!isAMessageWithThemeLoaderKey && !isAThemeLoaderObject(data)) return;
 
-		if (isDataAstring) {
-			postThemekey(data, key);
+		if (isAMessageWithThemeLoaderKey) {
+			window.top.postMessage(`theme-loader.${key}`, '*');
 		} else {
 			postStyles(data, key);
 		}
