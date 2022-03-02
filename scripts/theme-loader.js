@@ -9,37 +9,34 @@ In addition to this script, we also need to insert a script tag into the iframe 
 const { log } = console;
 const loggerKey = 'THEME-LOADER';
 
-const themeLoader = 'theme-loader';
-
 // from app/styles/@theme-system/messenger/utils.js
-function isAThemeLoaderMessage(data) {
-	const isDataAstring = typeof data === 'string';
-	return isDataAstring && data.startsWith(themeLoader);
-}
+export const themeLoaderPrefix = 'theme-loader.';
 
-function isAThemeLoaderObject(data) {
-	const isDataAnObject = typeof data === 'object';
-	return (
-		isDataAnObject && data.key?.length > 0 && data.key.startsWith(themeLoader)
-	);
-}
+export function isValidType(data, prefix = themeLoaderPrefix) {
+	const type = typeof data;
 
-function isDataKeyValid(data, key) {
-	if (!isAThemeLoaderMessage(data)) {
-		return false;
-	}
+	// return if it's of a different type
+	if (!['string', 'object'].includes(type)) return null;
 
-	const keys = data.split('.');
+	// check the prefix on a string
+	if (type === 'string' && !data.startsWith(prefix)) return null;
 
-	if (keys.length < 1 || keys[1] !== key) {
-		return false;
-	}
-	return true;
+	// check the prefix on a key field
+	if (type === 'object' && !data.key?.startsWith(prefix)) return null;
+
+	const key =
+		type === 'string' ? data.split('.').pop() : data.key.split('.').pop();
+
+	// return the type
+	return {
+		type,
+		key,
+	};
 }
 
 // from app/styles/@theme-system/loader/browser.js
 function postStyles(data, key) {
-	if (isDataKeyValid(data, key)) return;
+	if (data.key !== key || !data.styles) return;
 	const sheet = new StyleSheet({
 		key,
 		container: document.head,
@@ -60,17 +57,15 @@ function loadTheme() {
 
 	log(`${loggerKey}: load iframe with key`, key);
 
-	window.top.postMessage(`theme-loader.${key}`, '*');
+	window.top.postMessage(`${themeLoaderPrefix}${key}`, '*');
 
 	window.addEventListener('message', ({ data }) => {
-		const isAMessageWithThemeLoaderKey = isAThemeLoaderMessage(data);
-		console.log(data, 'data l lrel l');
-		if (!isAMessageWithThemeLoaderKey && !isAThemeLoaderObject(data)) return;
+		const type = isValidType(data);
+		if (!type) return;
 
-		if (isAMessageWithThemeLoaderKey) {
-			window.top.postMessage(`theme-loader.${key}`, '*');
+		if (type.type === 'string') {
+			window.top.postMessage(`${themeLoaderPrefix}${type.key}`, '*');
 		} else {
-			console.log('data recevie stle');
 			postStyles(data, key);
 		}
 	});
