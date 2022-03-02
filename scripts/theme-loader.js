@@ -35,8 +35,12 @@ export function isValidType(data, prefix = themeLoaderPrefix) {
 }
 
 // from app/styles/@theme-system/loader/browser.js
+const { log } = console;
+const loggerKey = 'THEME-LOADER';
+
 function postStyles(data, key) {
 	if (data.key !== key || !data.styles) return;
+
 	const sheet = new StyleSheet({
 		key,
 		container: document.head,
@@ -66,7 +70,7 @@ function loadTheme() {
 		if (type.type === 'string') {
 			window.top.postMessage(`${themeLoaderPrefix}${type.key}`, '*');
 		} else {
-			postStyles(data, key);
+			postStyles(data, type.key);
 		}
 	});
 }
