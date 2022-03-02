@@ -63,10 +63,11 @@ function loadTheme() {
 		const type = isValidType(data);
 		if (!type) return;
 
+		const loaderKey = `${themeLoaderPrefix}${type.key}`;
 		if (type.type === 'string') {
-			window.top.postMessage(`${themeLoaderPrefix}${type.key}`, '*');
+			window.top.postMessage(loaderKey, '*');
 		} else {
-			postStyles(data, type.key);
+			postStyles(data, loaderKey);
 		}
 	});
 }
