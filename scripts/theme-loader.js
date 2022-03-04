@@ -34,6 +34,7 @@ export function isValidType(data, prefix = themeLoaderPrefix) {
 	};
 }
 
+// from app/styles/@theme-system/loader/browsers.js
 function postStyles(data, key) {
 	if (data.key !== key || !data.styles) return;
 
@@ -63,12 +64,7 @@ function loadTheme() {
 		const type = isValidType(data);
 		if (!type) return;
 
-		const loaderKey = `${themeLoaderPrefix}${type.key}`;
-		if (type.type === 'string') {
-			window.top.postMessage(loaderKey, '*');
-		} else {
-			postStyles(data, loaderKey);
-		}
+		postStyles(data, `${themeLoaderPrefix}${type.key}`);
 	});
 }
 
