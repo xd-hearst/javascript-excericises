@@ -24,17 +24,17 @@ function reverse(str){
 }
 
 function letter(score){
-  var letter = ''
   if (score > 90){
-    letter = 'A';
-  } elseif (score > 80){
-    letter = 'B';
-  } elseif (score > 70){
-    letter = 'C';
-  } elseif (score > 60){
-    letter = 'D';
-  } else{
-    letter = 'F'
+    return 'A';
+  } 
+  if (score > 80){
+    return 'B';
+  } 
+  if (score > 70){
+    return 'C';
+  } 
+  if (score > 60){
+    return 'D';
+  } 
+    return 'F';
   }
-  return letter
-}
